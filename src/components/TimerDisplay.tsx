@@ -40,7 +40,7 @@ export function TimerDisplay({ segment, secondsLeft, warningLevel, isFinished }:
         boxShadow: 'var(--shadow)',
       }}
     >
-      <div style={{ fontSize: 13, fontWeight: 500, color: 'inherit', opacity: 0.7, marginBottom: 8 }}>
+      <div style={{ fontSize: 22, fontWeight: 600, color: 'inherit', opacity: 0.7, marginBottom: 8 }}>
         {segment?.name || 'No segment'}
       </div>
       <div
@@ -54,11 +54,6 @@ export function TimerDisplay({ segment, secondsLeft, warningLevel, isFinished }:
       >
         {isFinished ? 'Done!' : formatTime(secondsLeft)}
       </div>
-      {warningLevel !== 'none' && !isFinished && (
-        <div style={{ marginTop: 12, fontSize: 13, fontWeight: 600 }}>
-          {warningLevel === 'red' ? 'Time almost up!' : 'Wrapping up soon'}
-        </div>
-      )}
     </div>
   );
 }

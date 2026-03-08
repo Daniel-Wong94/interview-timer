@@ -1,8 +1,33 @@
+import { useEffect, useRef } from 'react';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 import type { Segment } from '../types';
 
 interface Props {
   segments: Segment[];
   currentSegmentIndex: number;
+}
+
+function ReadOnlyQuill({ html }: { html: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const quillRef = useRef<Quill | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current || quillRef.current) return;
+    quillRef.current = new Quill(containerRef.current, {
+      theme: 'snow',
+      readOnly: true,
+      modules: { toolbar: false },
+    });
+  }, []);
+
+  useEffect(() => {
+    const quill = quillRef.current;
+    if (!quill) return;
+    quill.clipboard.dangerouslyPasteHTML(html ?? '');
+  }, [html]);
+
+  return <div ref={containerRef} />;
 }
 
 export function NotesPanel({ segments, currentSegmentIndex }: Props) {
@@ -21,16 +46,7 @@ export function NotesPanel({ segments, currentSegmentIndex }: Props) {
         Notes{currentSegment?.name ? ` — ${currentSegment.name}` : ''}
       </div>
       {hasNotes ? (
-        <div
-          className="ql-snow"
-          style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--color-text)' }}
-        >
-          <div
-            className="ql-editor"
-            style={{ padding: 0 }}
-            dangerouslySetInnerHTML={{ __html: currentSegment.notes }}
-          />
-        </div>
+        <ReadOnlyQuill html={currentSegment.notes} />
       ) : (
         <div style={{ color: 'var(--color-text-muted)', fontSize: 14, fontStyle: 'italic' }}>
           No notes for this segment.
