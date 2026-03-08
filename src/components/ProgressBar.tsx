@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import type { Segment } from '../types';
 
 interface Props {
@@ -28,6 +29,9 @@ function formatTime(seconds: number) {
 
 export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFinished, onJumpTo }: Props) {
   const totalSeconds = segments.reduce((sum, s) => sum + s.durationSeconds, 0);
+  const [jumping, setJumping] = useState(false);
+  const jumpRafRef = useRef<number | null>(null);
+
   if (totalSeconds === 0) return null;
 
   const elapsedInPrev = segments
@@ -43,6 +47,18 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFini
     cumulative += s.durationSeconds;
     return offset;
   });
+
+  const handleJump = (i: number) => {
+    if (jumpRafRef.current !== null) cancelAnimationFrame(jumpRafRef.current);
+    setJumping(true);
+    onJumpTo(i);
+    // Re-enable transition after the instant jump has been painted
+    jumpRafRef.current = requestAnimationFrame(() => {
+      jumpRafRef.current = requestAnimationFrame(() => {
+        setJumping(false);
+      });
+    });
+  };
 
   return (
     <div style={{ width: '100%' }}>
@@ -68,8 +84,8 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFini
                 role="button"
                 tabIndex={0}
                 aria-label={`Jump to ${seg.name || `Segment ${i + 1}`}: ${formatTime(seg.durationSeconds)}${isCompleted ? ' (done)' : isCurrent ? ' (active)' : ''}`}
-                onClick={() => onJumpTo(i)}
-                onKeyDown={e => e.key === 'Enter' && onJumpTo(i)}
+                onClick={() => handleJump(i)}
+                onKeyDown={e => e.key === 'Enter' && handleJump(i)}
                 style={{
                   cursor: 'pointer',
                   width: `${widthPct}%`,
@@ -139,7 +155,7 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFini
             boxShadow: '0 0 6px 1px rgba(0,0,0,0.45)',
             borderRadius: 2,
             pointerEvents: 'none',
-            transition: 'none',
+            transition: jumping ? 'none' : 'left 1s linear',
             zIndex: 2,
           }}
         />
