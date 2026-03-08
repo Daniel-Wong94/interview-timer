@@ -1,4 +1,5 @@
 import type { Segment } from '../types';
+import { QuillEditor } from './QuillEditor';
 
 interface Props {
   segment: Segment;
@@ -15,8 +16,8 @@ export function SegmentRow({ segment, index, total, onChange, onRemove, onMoveUp
   const seconds = segment.durationSeconds % 60;
 
   const handleDuration = (mins: number, secs: number) => {
-    const total = Math.max(1, mins * 60 + secs);
-    onChange({ ...segment, durationSeconds: total });
+    const totalSecs = Math.max(1, mins * 60 + secs);
+    onChange({ ...segment, durationSeconds: totalSecs });
   };
 
   return (
@@ -39,12 +40,10 @@ export function SegmentRow({ segment, index, total, onChange, onRemove, onMoveUp
           onChange={e => onChange({ ...segment, name: e.target.value })}
           style={{ width: '100%' }}
         />
-        <textarea
-          placeholder="Notes (optional)"
+        <QuillEditor
           value={segment.notes}
-          onChange={e => onChange({ ...segment, notes: e.target.value })}
-          rows={2}
-          style={{ width: '100%' }}
+          onChange={notes => onChange({ ...segment, notes })}
+          placeholder="Notes (optional)"
         />
       </div>
 
