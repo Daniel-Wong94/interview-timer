@@ -26,7 +26,7 @@ export function SegmentRow({ segment, index, total, onChange, onRemove, onMoveUp
       gridTemplateColumns: '1fr 80px 60px auto auto',
       gap: 8,
       alignItems: 'start',
-      background: '#fff',
+      background: 'var(--color-surface)',
       border: '1px solid var(--color-border)',
       borderRadius: 'var(--radius)',
       padding: 12,
@@ -75,13 +75,13 @@ export function SegmentRow({ segment, index, total, onChange, onRemove, onMoveUp
           onClick={onMoveUp}
           disabled={index === 0}
           title="Move up"
-          style={{ background: '#e9ecef', padding: '4px 8px' }}
+          style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', padding: '4px 8px' }}
         >↑</button>
         <button
           onClick={onMoveDown}
           disabled={index === total - 1}
           title="Move down"
-          style={{ background: '#e9ecef', padding: '4px 8px' }}
+          style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', padding: '4px 8px' }}
         >↓</button>
       </div>
 
@@ -89,7 +89,7 @@ export function SegmentRow({ segment, index, total, onChange, onRemove, onMoveUp
         <button
           onClick={onRemove}
           title="Remove segment"
-          style={{ background: '#f8d7da', color: 'var(--color-danger)', padding: '4px 8px' }}
+          style={{ background: 'var(--color-danger-bg)', color: 'var(--color-danger)', padding: '4px 8px' }}
         >✕</button>
       </div>
     </div>

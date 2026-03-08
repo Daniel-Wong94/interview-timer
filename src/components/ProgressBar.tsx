@@ -4,6 +4,7 @@ interface Props {
   segments: Segment[];
   currentSegmentIndex: number;
   secondsLeft: number;
+  isFinished: boolean;
 }
 
 // Accessible color palette — each passes WCAG AA (≥4.5:1) with white text
@@ -24,7 +25,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export function ProgressBar({ segments, currentSegmentIndex, secondsLeft }: Props) {
+export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFinished }: Props) {
   const totalSeconds = segments.reduce((sum, s) => sum + s.durationSeconds, 0);
   if (totalSeconds === 0) return null;
 
@@ -57,7 +58,7 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft }: Prop
           {segments.map((seg, i) => {
             const widthPct = (seg.durationSeconds / totalSeconds) * 100;
             const color = SEGMENT_COLORS[i % SEGMENT_COLORS.length];
-            const isCompleted = i < currentSegmentIndex;
+            const isCompleted = i < currentSegmentIndex || isFinished;
             const isCurrent = i === currentSegmentIndex;
 
             return (
@@ -67,7 +68,7 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft }: Prop
                 aria-label={`${seg.name || `Segment ${i + 1}`}: ${formatTime(seg.durationSeconds)}${isCompleted ? ' (done)' : isCurrent ? ' (active)' : ''}`}
                 style={{
                   width: `${widthPct}%`,
-                  background: color,
+                  background: isCompleted ? '#adb5bd' : color,
                   borderRight: i < segments.length - 1 ? '2px solid rgba(255,255,255,0.25)' : 'none',
                   display: 'flex',
                   flexDirection: 'column',
@@ -76,8 +77,7 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft }: Prop
                   overflow: 'hidden',
                   padding: '0 8px',
                   position: 'relative',
-                  filter: isCompleted ? 'brightness(0.55)' : 'none',
-                  transition: 'filter 0.4s ease',
+                  transition: 'background 0.4s ease',
                   flexShrink: 0,
                 }}
               >

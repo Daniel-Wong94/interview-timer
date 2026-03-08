@@ -14,24 +14,24 @@ function formatTime(seconds: number) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-const bgColors: Record<WarningLevel, string> = {
-  none: '#ffffff',
-  yellow: '#FFF3CD',
-  red: '#F8D7DA',
+const bgVars: Record<WarningLevel, string> = {
+  none: 'var(--timer-normal-bg)',
+  yellow: 'var(--timer-yellow-bg)',
+  red: 'var(--timer-red-bg)',
 };
 
-const textColors: Record<WarningLevel, string> = {
-  none: '#212529',
-  yellow: '#856404',
-  red: '#842029',
+const textVars: Record<WarningLevel, string> = {
+  none: 'var(--timer-normal-text)',
+  yellow: 'var(--timer-yellow-text)',
+  red: 'var(--timer-red-text)',
 };
 
 export function TimerDisplay({ segment, secondsLeft, warningLevel, isFinished }: Props) {
   return (
     <div
       style={{
-        background: bgColors[warningLevel],
-        color: textColors[warningLevel],
+        background: isFinished ? 'var(--timer-finished-bg)' : bgVars[warningLevel],
+        color: isFinished ? 'var(--timer-finished-text)' : textVars[warningLevel],
         borderRadius: 12,
         padding: '32px 48px',
         textAlign: 'center',

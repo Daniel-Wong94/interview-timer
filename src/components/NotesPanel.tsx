@@ -36,7 +36,7 @@ export function NotesPanel({ segments, currentSegmentIndex }: Props) {
 
   return (
     <div style={{
-      background: '#fff',
+      background: 'var(--color-surface)',
       border: '1px solid var(--color-border)',
       borderRadius: 8,
       padding: 16,

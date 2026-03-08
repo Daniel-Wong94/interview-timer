@@ -7,17 +7,56 @@
 :root {
   --color-bg: #f8f9fa;
   --color-surface: #ffffff;
+  --color-surface-2: #e9ecef;
   --color-border: #dee2e6;
   --color-text: #212529;
   --color-text-muted: #6c757d;
+  --color-muted: #adb5bd;
   --color-primary: #0d6efd;
   --color-primary-hover: #0b5ed7;
   --color-danger: #dc3545;
+  --color-danger-bg: #f8d7da;
   --color-success: #198754;
   --color-warning-yellow: #FFF3CD;
   --color-warning-red: #F8D7DA;
   --radius: 6px;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  /* Timer display warning states */
+  --timer-normal-bg: #ffffff;
+  --timer-normal-text: #212529;
+  --timer-yellow-bg: #FFF3CD;
+  --timer-yellow-text: #856404;
+  --timer-red-bg: #F8D7DA;
+  --timer-red-text: #842029;
+  --timer-finished-bg: #e9ecef;
+  --timer-finished-text: #adb5bd;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-surface-2: #2a2a2a;
+  --color-border: #333333;
+  --color-text: #e8e8e8;
+  --color-text-muted: #888888;
+  --color-muted: #555555;
+  --color-primary: #4a9eff;
+  --color-primary-hover: #2288ff;
+  --color-danger: #ff6b6b;
+  --color-danger-bg: #3d0000;
+  --color-success: #4caf50;
+  --color-warning-yellow: #332700;
+  --color-warning-red: #330000;
+
+  --timer-normal-bg: #1a1a1a;
+  --timer-normal-text: #e8e8e8;
+  --timer-yellow-bg: #332700;
+  --timer-yellow-text: #ffc107;
+  --timer-red-bg: #330000;
+  --timer-red-text: #ff6b6b;
+  --timer-finished-bg: #222222;
+  --timer-finished-text: #555555;
 }
 
 body {
@@ -49,6 +88,8 @@ input, textarea {
   font-size: 14px;
   font-family: inherit;
   outline: none;
+  background: var(--color-surface);
+  color: var(--color-text);
   transition: border-color 0.15s;
 }
 
@@ -62,4 +103,41 @@ textarea {
 
 .ql-editor {
   min-height: 140px;
+}
+
+/* Quill dark mode overrides */
+[data-theme="dark"] .ql-toolbar.ql-snow,
+[data-theme="dark"] .ql-container.ql-snow {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .ql-editor {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .ql-editor.ql-blank::before {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .ql-toolbar .ql-stroke {
+  stroke: var(--color-text-muted);
+}
+
+[data-theme="dark"] .ql-toolbar .ql-fill {
+  fill: var(--color-text-muted);
+}
+
+[data-theme="dark"] .ql-toolbar button:hover .ql-stroke,
+[data-theme="dark"] .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--color-primary);
+}
+
+[data-theme="dark"] .ql-toolbar button:hover .ql-fill,
+[data-theme="dark"] .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--color-primary);
+}
+
+[data-theme="dark"] .ql-picker-label {
+  color: var(--color-text-muted);
 }

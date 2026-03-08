@@ -32,9 +32,9 @@ export function WarningSettings({ yellowSeconds, redSeconds, onChange }: Props) 
         />
       </div>
       <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 4 }}>
-        <span style={{ background: '#FFF3CD', padding: '2px 6px', borderRadius: 3 }}>Yellow</span>{' '}
+        <span style={{ background: 'var(--timer-yellow-bg)', color: 'var(--timer-yellow-text)', padding: '2px 6px', borderRadius: 3 }}>Yellow</span>{' '}
         at ≤{yellowSeconds}s &nbsp;
-        <span style={{ background: '#F8D7DA', padding: '2px 6px', borderRadius: 3 }}>Red</span>{' '}
+        <span style={{ background: 'var(--timer-red-bg)', color: 'var(--timer-red-text)', padding: '2px 6px', borderRadius: 3 }}>Red</span>{' '}
         at ≤{redSeconds}s
       </div>
     </div>

@@ -1,4 +1,5 @@
 import type { Presentation } from '../types';
+import { useTheme } from '../hooks/useTheme';
 import { SegmentList } from '../components/SegmentList';
 import { WarningSettings } from '../components/WarningSettings';
 
@@ -18,12 +19,22 @@ function formatDuration(seconds: number) {
 }
 
 export function SetupPage({ presentation, onChange, onStart }: Props) {
+  const { darkMode, toggle } = useTheme();
   const totalSeconds = presentation.segments.reduce((sum, s) => sum + s.durationSeconds, 0);
   const canStart = presentation.segments.length > 0;
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 16px' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>Presentation Timer</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Presentation Timer</h1>
+        <button
+          onClick={toggle}
+          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', fontSize: 16, padding: '6px 10px', borderRadius: 8 }}
+        >
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
       <p style={{ color: 'var(--color-text-muted)', marginBottom: 32 }}>
         Configure your segments, then start the timer.
       </p>
@@ -58,7 +69,7 @@ export function SetupPage({ presentation, onChange, onStart }: Props) {
         onClick={onStart}
         disabled={!canStart}
         style={{
-          background: canStart ? 'var(--color-primary)' : '#adb5bd',
+          background: canStart ? 'var(--color-primary)' : 'var(--color-muted)',
           color: '#fff',
           fontSize: 16,
           padding: '12px 32px',
