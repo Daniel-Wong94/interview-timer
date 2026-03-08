@@ -59,3 +59,7 @@ input:focus, textarea:focus {
 textarea {
   resize: vertical;
 }
+
+.ql-editor {
+  min-height: 140px;
+}
