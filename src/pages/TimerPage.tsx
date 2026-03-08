@@ -23,6 +23,7 @@ export function TimerPage({ presentation, onBack }: Props) {
     start,
     pause,
     reset,
+    jumpTo,
   } = useTimer({ segments, warningYellowSeconds, warningRedSeconds });
 
   const currentSegment = segments[currentSegmentIndex];
@@ -89,6 +90,7 @@ export function TimerPage({ presentation, onBack }: Props) {
         currentSegmentIndex={currentSegmentIndex}
         secondsLeft={secondsLeft}
         isFinished={isFinished}
+        onJumpTo={jumpTo}
       />
 
       {/* Notes panel */}

@@ -5,6 +5,7 @@ interface Props {
   currentSegmentIndex: number;
   secondsLeft: number;
   isFinished: boolean;
+  onJumpTo: (index: number) => void;
 }
 
 // Accessible color palette — each passes WCAG AA (≥4.5:1) with white text
@@ -25,7 +26,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFinished }: Props) {
+export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFinished, onJumpTo }: Props) {
   const totalSeconds = segments.reduce((sum, s) => sum + s.durationSeconds, 0);
   if (totalSeconds === 0) return null;
 
@@ -64,9 +65,13 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFini
             return (
               <div
                 key={seg.id}
-                role="img"
-                aria-label={`${seg.name || `Segment ${i + 1}`}: ${formatTime(seg.durationSeconds)}${isCompleted ? ' (done)' : isCurrent ? ' (active)' : ''}`}
+                role="button"
+                tabIndex={0}
+                aria-label={`Jump to ${seg.name || `Segment ${i + 1}`}: ${formatTime(seg.durationSeconds)}${isCompleted ? ' (done)' : isCurrent ? ' (active)' : ''}`}
+                onClick={() => onJumpTo(i)}
+                onKeyDown={e => e.key === 'Enter' && onJumpTo(i)}
                 style={{
+                  cursor: 'pointer',
                   width: `${widthPct}%`,
                   background: isCompleted ? '#adb5bd' : color,
                   borderRight: i < segments.length - 1 ? '2px solid rgba(255,255,255,0.25)' : 'none',
@@ -134,7 +139,7 @@ export function ProgressBar({ segments, currentSegmentIndex, secondsLeft, isFini
             boxShadow: '0 0 6px 1px rgba(0,0,0,0.45)',
             borderRadius: 2,
             pointerEvents: 'none',
-            transition: 'left 0.8s linear',
+            transition: 'none',
             zIndex: 2,
           }}
         />
