@@ -22,7 +22,6 @@ export function TimerPage({ presentation, onBack }: Props) {
     start,
     pause,
     reset,
-    jumpTo,
   } = useTimer({ segments, warningYellowSeconds, warningRedSeconds });
 
   // Keyboard shortcut: Space = play/pause
@@ -106,13 +105,10 @@ export function TimerPage({ presentation, onBack }: Props) {
       </div>
 
       {/* Notes panel */}
-      <div style={{ minHeight: 200 }}>
-        <NotesPanel
-          segments={segments}
-          currentSegmentIndex={currentSegmentIndex}
-          onJumpTo={jumpTo}
-        />
-      </div>
+      <NotesPanel
+        segments={segments}
+        currentSegmentIndex={currentSegmentIndex}
+      />
     </div>
   );
 }
