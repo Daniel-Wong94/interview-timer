@@ -37,16 +37,15 @@ export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft,
           maskImage: 'linear-gradient(to right, transparent, black 12%, black 88%, transparent)',
         }}
       >
-        {/* Track background */}
+        {/* Segment fills — translate left as time progresses, scrubber stays at center */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: 24,
-        }} />
-
-        {/* Segment fills */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', borderRadius: 24, overflow: 'hidden' }}>
+          display: 'flex',
+          transform: `translateX(${(0.5 - progress) * 100}%)`,
+          transition: 'transform 0.8s linear',
+          willChange: 'transform',
+        }}>
           {segments.map((seg, i) => {
             const color = SEGMENT_COLORS[i % SEGMENT_COLORS.length];
             const widthPct = totalDuration > 0 ? (seg.durationSeconds / totalDuration) * 100 : 0;
@@ -67,19 +66,18 @@ export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft,
           })}
         </div>
 
-        {/* Scrubber (vertical white bar) */}
+        {/* Scrubber — fixed at center */}
         <div
           style={{
             position: 'absolute',
             top: '50%',
-            left: `${progress * 100}%`,
+            left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 16,
             height: 140,
             background: '#ffffff',
             borderRadius: 16,
             boxShadow: '0 0 16px rgba(49,46,129,0.25)',
-            transition: 'left 0.8s linear',
             zIndex: 2,
           }}
         />

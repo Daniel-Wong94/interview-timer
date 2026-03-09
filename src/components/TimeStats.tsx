@@ -18,21 +18,15 @@ export function TimeStats({ totalElapsed, secondsLeft, totalRemaining }: Props) 
     <div style={{
       display: 'flex',
       alignItems: 'center',
-      gap: 24,
+      justifyContent: 'space-between',
       padding: '0 48px',
       fontFamily: "'SF Mono', 'Fira Mono', 'Consolas', monospace",
       whiteSpace: 'nowrap',
       textShadow: '0 0 16px rgba(255,255,255,0.25)',
     }}>
-      <div style={{ flex: '1 0 0', display: 'flex', justifyContent: 'center' }}>
-        <StatBlock label="Total Time Elapsed" value={fmt(totalElapsed)} />
-      </div>
-      <div style={{ flex: '1 0 0', display: 'flex', justifyContent: 'center' }}>
-        <MainTimer value={fmt(secondsLeft)} />
-      </div>
-      <div style={{ flex: '1 0 0', display: 'flex', justifyContent: 'center' }}>
-        <StatBlock label="total Time Remaining" value={fmt(totalRemaining)} />
-      </div>
+      <StatBlock label="Total Time Elapsed" value={fmt(totalElapsed)} />
+      <MainTimer value={fmt(secondsLeft)} />
+      <StatBlock label="total Time Remaining" value={fmt(totalRemaining)} />
     </div>
   );
 }

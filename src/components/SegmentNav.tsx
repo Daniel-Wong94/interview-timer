@@ -16,7 +16,7 @@ export function SegmentNav({ segments, currentSegmentIndex, onJumpTo }: Props) {
     <div style={{
       display: 'flex',
       alignItems: 'flex-start',
-      gap: 24,
+      justifyContent: 'space-between',
       padding: '0 48px',
       fontFamily: "'SF Mono', 'Fira Mono', 'Consolas', monospace",
     }}>

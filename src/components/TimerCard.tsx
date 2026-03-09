@@ -70,7 +70,7 @@ export function TimerCard({
           display: 'flex',
           flexDirection: 'column',
           gap: 32,
-          alignItems: 'center',
+          alignItems: 'stretch',
           overflow: 'hidden',
         }}>
           <TimeStats
