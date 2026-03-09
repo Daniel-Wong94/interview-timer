@@ -1,103 +1,98 @@
+import { useState, useEffect } from 'react';
 import type { Presentation } from '../types';
 import { useTimer } from '../hooks/useTimer';
-import { useTheme } from '../hooks/useTheme';
-import { ProgressBar } from '../components/ProgressBar';
-import { TimerDisplay } from '../components/TimerDisplay';
-import { NotesPanel } from '../components/NotesPanel';
+import { TimerCard } from '../components/TimerCard';
+import { ControlBar } from '../components/ControlBar';
 
 interface Props {
   presentation: Presentation;
+  onChange: (p: Presentation) => void;
   onBack: () => void;
 }
 
-export function TimerPage({ presentation, onBack }: Props) {
+export function TimerPage({ presentation, onChange, onBack }: Props) {
   const { segments, warningYellowSeconds, warningRedSeconds } = presentation;
-  const { darkMode, toggle } = useTheme();
+  const [notesVisible, setNotesVisible] = useState(true);
 
   const {
     currentSegmentIndex,
     secondsLeft,
     isRunning,
     isFinished,
-    warningLevel,
     start,
     pause,
     reset,
     jumpTo,
   } = useTimer({ segments, warningYellowSeconds, warningRedSeconds });
 
-  const currentSegment = segments[currentSegmentIndex];
+  // Force dark navy page background while timer is mounted
+  useEffect(() => {
+    const prevBg = document.body.style.background;
+    document.body.style.background = 'var(--timer-page-bg)';
+    return () => { document.body.style.background = prevBg; };
+  }, []);
+
+  // Total elapsed = all completed segments + elapsed in current segment
+  const totalElapsed =
+    segments.slice(0, currentSegmentIndex).reduce((s, seg) => s + seg.durationSeconds, 0) +
+    (isFinished
+      ? (segments[currentSegmentIndex]?.durationSeconds ?? 0)
+      : (segments[currentSegmentIndex]?.durationSeconds ?? 0) - secondsLeft);
+
+  // Total remaining = current secondsLeft + all future segments
+  const totalRemaining =
+    secondsLeft +
+    segments.slice(currentSegmentIndex + 1).reduce((s, seg) => s + seg.durationSeconds, 0);
+
+  function handlePlayPause() {
+    if (isRunning) pause();
+    else start();
+  }
+
+  function handleUpdateNotes(index: number, notes: string) {
+    const updatedSegments = segments.map((seg, i) =>
+      i === index ? { ...seg, notes } : seg
+    );
+    onChange({ ...presentation, segments: updatedSegments });
+  }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button
-          onClick={onBack}
-          style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', fontSize: 13 }}
-        >
-          ← Back to Setup
-        </button>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {!isFinished ? (
-            isRunning ? (
-              <button
-                onClick={pause}
-                style={{ background: '#ffc107', color: '#000', fontSize: 14, padding: '6px 18px', borderRadius: 8 }}
-              >
-                ⏸ Pause
-              </button>
-            ) : (
-              <button
-                onClick={start}
-                style={{ background: 'var(--color-success)', color: '#fff', fontSize: 14, padding: '6px 18px', borderRadius: 8 }}
-              >
-                ▶ {currentSegmentIndex === 0 && secondsLeft === segments[0]?.durationSeconds ? 'Start' : 'Resume'}
-              </button>
-            )
-          ) : (
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-success)' }}>
-              Complete!
-            </span>
-          )}
-          <button
-            onClick={reset}
-            style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', fontSize: 14, padding: '6px 18px', borderRadius: 8 }}
-          >
-            ↺ Reset
-          </button>
-          <button
-            onClick={toggle}
-            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)', fontSize: 16, padding: '6px 10px', borderRadius: 8 }}
-          >
-            {darkMode ? '☀️' : '🌙'}
-          </button>
-        </div>
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--timer-page-bg)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '24px 16px',
+    }}>
+      <div style={{
+        width: '100%',
+        maxWidth: 1040,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 32,
+      }}>
+        <TimerCard
+          segments={segments}
+          currentSegmentIndex={currentSegmentIndex}
+          secondsLeft={secondsLeft}
+          isFinished={isFinished}
+          totalElapsed={totalElapsed}
+          totalRemaining={totalRemaining}
+          notesVisible={notesVisible}
+          onToggleNotes={() => setNotesVisible(v => !v)}
+          onJumpTo={jumpTo}
+          onUpdateNotes={handleUpdateNotes}
+        />
+
+        <ControlBar
+          isRunning={isRunning}
+          isFinished={isFinished}
+          onPlayPause={handlePlayPause}
+          onReset={reset}
+          onEdit={onBack}
+        />
       </div>
-
-      {/* Timer display */}
-      <TimerDisplay
-        segment={currentSegment}
-        secondsLeft={secondsLeft}
-        warningLevel={warningLevel}
-        isFinished={isFinished}
-      />
-
-      {/* Progress bar */}
-      <ProgressBar
-        segments={segments}
-        currentSegmentIndex={currentSegmentIndex}
-        secondsLeft={secondsLeft}
-        isFinished={isFinished}
-        onJumpTo={jumpTo}
-      />
-
-      {/* Notes panel */}
-      <NotesPanel
-        segments={segments}
-        currentSegmentIndex={currentSegmentIndex}
-      />
     </div>
   );
 }

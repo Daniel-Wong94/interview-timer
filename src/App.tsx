@@ -20,6 +20,7 @@ export function App() {
       ) : (
         <TimerPage
           presentation={presentation}
+          onChange={setPresentation}
           onBack={() => setView('setup')}
         />
       )}

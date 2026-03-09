@@ -59,6 +59,20 @@
   --timer-finished-text: #555555;
 }
 
+/* Timer redesign tokens */
+:root {
+  --timer-card-bg: #3b3d8a;
+  --timer-page-bg: #1a1b3a;
+  --timer-text-primary: #ffffff;
+  --timer-text-muted: rgba(255,255,255,0.5);
+  --progress-gradient: linear-gradient(to right, #5b5ea6, #f4a97f);
+  --control-pause: linear-gradient(135deg, #f4a05a, #e07030);
+  --control-reset: #a8c8f0;
+  --control-edit: #c8a8d8;
+  --badge-bg: #4dabf7;
+  --badge-radius: 4px;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--color-bg);
