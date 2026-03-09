@@ -1,9 +1,11 @@
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { Segment } from '../types';
 
 interface Props {
   segments: Segment[];
   currentSegmentIndex: number;
   secondsLeft: number;
+  isRunning: boolean;
   isFinished: boolean;
 }
 
@@ -16,14 +18,56 @@ const SEGMENT_COLORS = [
   { from: '#f6d080', to: 'rgba(246,208,128,0)' },
 ];
 
-export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft, isFinished }: Props) {
+export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft, isRunning, isFinished }: Props) {
   const totalDuration = segments.reduce((sum, s) => sum + s.durationSeconds, 0);
   const completedDuration = segments.slice(0, currentSegmentIndex).reduce((sum, s) => sum + s.durationSeconds, 0);
-  const currentElapsed = isFinished
-    ? (segments[currentSegmentIndex]?.durationSeconds ?? 0)
-    : (segments[currentSegmentIndex]?.durationSeconds ?? 0) - secondsLeft;
-  const elapsed = completedDuration + currentElapsed;
-  const progress = totalDuration > 0 ? Math.min(elapsed / totalDuration, 1) : 0;
+  const integerElapsed = isFinished
+    ? completedDuration + (segments[currentSegmentIndex]?.durationSeconds ?? 0)
+    : completedDuration + (segments[currentSegmentIndex]?.durationSeconds ?? 0) - secondsLeft;
+
+  // Refs for the hot rAF path — no React state, no batching issues
+  const trackRef = useRef<HTMLDivElement>(null);
+  const tickTimeRef = useRef(performance.now());
+  const integerElapsedRef = useRef(integerElapsed);
+  const totalDurationRef = useRef(totalDuration);
+  const rafRef = useRef<number | null>(null);
+
+  // Keep duration ref current (segments can change)
+  totalDurationRef.current = totalDuration;
+
+  // When the integer second ticks (or user jumps), record new baseline atomically
+  useLayoutEffect(() => {
+    integerElapsedRef.current = integerElapsed;
+    tickTimeRef.current = performance.now();
+  }, [integerElapsed]);
+
+  function applyTransform() {
+    if (!trackRef.current) return;
+    const subSecond = Math.min((performance.now() - tickTimeRef.current) / 1000, 1);
+    const smoothElapsed = integerElapsedRef.current + subSecond;
+    const progress = totalDurationRef.current > 0
+      ? Math.min(smoothElapsed / totalDurationRef.current, 1)
+      : 0;
+    trackRef.current.style.transform = `translateX(${(0.5 - progress) * 100}%)`;
+  }
+
+  // Drive animation loop — writes directly to DOM, zero React renders
+  useEffect(() => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+
+    if (!isRunning || isFinished) {
+      applyTransform(); // snap to current integer position
+      return;
+    }
+
+    const loop = () => {
+      applyTransform();
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); };
+  }, [isRunning, isFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ width: '100%', padding: '0 48px' }}>
@@ -37,15 +81,8 @@ export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft,
           maskImage: 'linear-gradient(to right, transparent, black 12%, black 88%, transparent)',
         }}
       >
-        {/* Segment fills — translate left as time progresses, scrubber stays at center */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          transform: `translateX(${(0.5 - progress) * 100}%)`,
-          transition: 'transform 0.8s linear',
-          willChange: 'transform',
-        }}>
+        {/* Segment track — transform driven directly by rAF */}
+        <div ref={trackRef} style={{ position: 'absolute', inset: 0, display: 'flex', willChange: 'transform' }}>
           {segments.map((seg, i) => {
             const color = SEGMENT_COLORS[i % SEGMENT_COLORS.length];
             const widthPct = totalDuration > 0 ? (seg.durationSeconds / totalDuration) * 100 : 0;
@@ -56,8 +93,8 @@ export function SegmentProgressBar({ segments, currentSegmentIndex, secondsLeft,
                 style={{
                   flex: `0 0 ${widthPct}%`,
                   height: '100%',
-                  background: `linear-gradient(to right, ${color.from}, ${color.to} 90%)`,
-                  borderRadius: 24,
+                  background: `linear-gradient(to right, ${color.from}, ${color.to} 100%)`,
+                  borderRadius: '24px 0 0 24px',
                   opacity: isPast ? 0.2 : 1,
                   transition: 'opacity 0.4s',
                 }}

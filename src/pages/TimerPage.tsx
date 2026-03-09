@@ -76,6 +76,7 @@ export function TimerPage({ presentation, onChange, onBack }: Props) {
           segments={segments}
           currentSegmentIndex={currentSegmentIndex}
           secondsLeft={secondsLeft}
+          isRunning={isRunning}
           isFinished={isFinished}
           totalElapsed={totalElapsed}
           totalRemaining={totalRemaining}

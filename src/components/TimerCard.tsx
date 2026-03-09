@@ -8,6 +8,7 @@ interface Props {
   segments: Segment[];
   currentSegmentIndex: number;
   secondsLeft: number;
+  isRunning: boolean;
   isFinished: boolean;
   totalElapsed: number;
   totalRemaining: number;
@@ -41,6 +42,7 @@ export function TimerCard({
   segments,
   currentSegmentIndex,
   secondsLeft,
+  isRunning,
   isFinished,
   totalElapsed,
   totalRemaining,
@@ -82,6 +84,7 @@ export function TimerCard({
             segments={segments}
             currentSegmentIndex={currentSegmentIndex}
             secondsLeft={secondsLeft}
+            isRunning={isRunning}
             isFinished={isFinished}
           />
           <SegmentNav
