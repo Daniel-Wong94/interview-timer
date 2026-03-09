@@ -27,14 +27,6 @@ function ChevronUp() {
   );
 }
 
-// Chevron Down SVG
-function ChevronDown() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M5 7.5L10 12.5L15 7.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 const TIMER_GRADIENT = 'linear-gradient(10.97deg, rgb(49,46,129) 4.4%, rgb(113,105,234) 126.2%)';
 
@@ -94,14 +86,20 @@ export function TimerCard({
           />
         </div>
 
-        {/* Speaker notes section */}
-        {notesVisible && (
-          <SpeakerNotesPanel
-            segments={segments}
-            currentSegmentIndex={currentSegmentIndex}
-            onUpdateNotes={onUpdateNotes}
-          />
-        )}
+        {/* Speaker notes — grid-row trick animates height without knowing it */}
+        <div style={{
+          display: 'grid',
+          gridTemplateRows: notesVisible ? '1fr' : '0fr',
+          transition: 'grid-template-rows 0.4s ease',
+        }}>
+          <div style={{ overflow: 'hidden' }}>
+            <SpeakerNotesPanel
+              segments={segments}
+              currentSegmentIndex={currentSegmentIndex}
+              onUpdateNotes={onUpdateNotes}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Toggle bar — shows the outer purple gradient as background */}
@@ -133,7 +131,13 @@ export function TimerCard({
         }}>
           {notesVisible ? 'Hide Speaker notes' : 'Show Speaker notes'}
         </span>
-        {notesVisible ? <ChevronUp /> : <ChevronDown />}
+        <div style={{
+          transform: notesVisible ? 'rotate(0deg)' : 'rotate(180deg)',
+          transition: 'transform 0.4s ease',
+          display: 'flex',
+        }}>
+          <ChevronUp />
+        </div>
       </button>
     </div>
   );

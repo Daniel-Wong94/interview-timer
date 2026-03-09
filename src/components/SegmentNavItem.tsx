@@ -19,7 +19,9 @@ export function SegmentNavItem({ role, name, onClick }: Props) {
     <div
       onClick={onClick}
       style={{
-        flex: '1 0 0',
+        // Current gets twice the space so it's never squeezed
+        flex: isCurrent ? '2 1 0' : '1 1 0',
+        minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -46,8 +48,14 @@ export function SegmentNavItem({ role, name, onClick }: Props) {
         opacity: 0.8,
         textAlign: isCurrent ? 'center' : isNext ? 'right' : 'left',
         textShadow: '0 0 16px rgba(255,255,255,0.25)',
-        wordBreak: 'break-word',
-        minWidth: 0,
+        // Previous / next: single line with ellipsis
+        ...(isCurrent ? {} : {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '100%',
+          display: 'block',
+        }),
       }}>
         {name || '—'}
       </span>
